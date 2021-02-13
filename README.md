@@ -2,7 +2,7 @@
 # BORIS-Ephys Tools
 [BORIS User Guide](https://boris.readthedocs.io/en/latest/)
 
-###Exporting from BORIS:
+### Exporting from BORIS:
 1. Use "as behaviors binary table"
 2. Use 1-second intervals for now
 3. Export as .csv
