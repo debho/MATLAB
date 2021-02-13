@@ -13,7 +13,15 @@
 
 `[behNames,behTime,behExtract,extractedLabels,binBeh] = extractBinaryBehaviors(filename,true);`
 
-* If second parameter `doPlot` is true, it will plot an overview figure and save it as a PNG.
+If second parameter `doPlot` is true, it will plot an overview figure and save it as a PNG.
+
+**Obtaining Behavior Bins**
+
+Use the results from `extractBinaryBehaviors()`:
+
+`behRanges = binBehaviors(binBeh,5,true);`
+
+The `binInterval` tells the function to select minimum, non-overlapping bin widths. See function comments for more details.
 
 ---
 ### Stuff I figured out:

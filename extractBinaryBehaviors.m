@@ -37,10 +37,10 @@ for iBeh = 1:numel(behNames)
     plot(xData,repmat(iBeh,size(xData)),'.','markerSize',10,'color',colors(iBeh,:));
     hold on;
     % exorted data
-    thisEventData = behExtract(behExtract(:,1)==iBeh,:);
-    for iEx = 1:size(thisEventData,1)
-        plot(thisEventData(iEx,2),iBeh,'o','markerSize',10,'color',colors(iBeh,:)); % open
-        plot(thisEventData(iEx,3),iBeh,'x','markerSize',10,'color',colors(iBeh,:)); % close
+    thisBehData = behExtract(behExtract(:,1)==iBeh,:);
+    for ii = 1:size(thisBehData,1)
+        plot(thisBehData(ii,2),iBeh,'o','markerSize',10,'color',colors(iBeh,:)); % open
+        plot(thisBehData(ii,3),iBeh,'x','markerSize',10,'color',colors(iBeh,:)); % close
     end
 end
 title('Imported and Extracted Behaviors');
