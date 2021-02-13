@@ -10,6 +10,7 @@
 *Always include the date in filenames as YYYYMMDD
 
 **Extracting Binary Behaviors**
+
 `[behNames,behTime,behExtract,extractedLabels,binBeh] = extractBinaryBehaviors(filename,true);`
 
 * If second parameter (`doPlot`) is true, it will plot an overview figure and save it as a PNG in the `filename` location.
