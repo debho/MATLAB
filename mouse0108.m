@@ -55,10 +55,9 @@ for index = behRanges(1:end,2:3)
     tstart = behRanges(:,2) * fs;
     tend = behRanges(:,3) * fs;
     pspec = data(tstart:tend);
+    pspec = array2timetable(pspec', "SampleRate", fs);
 end
-
-pspectrum(pspec)
-% not sure why it shows up as normalized frequency?
+pspectrum(pspec, "FrequencyLimits", [0 100])
 
 
 
