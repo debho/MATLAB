@@ -17,12 +17,12 @@ eeg4 = data(idx4);
 
 % converts matrices to timetables
 fs = 250; % EEG was sampled at 250Hz
-%eeg1 = array2timetable(eeg1', 'SampleRate', fs);
-%eeg2 = array2timetable(eeg2', 'SampleRate', fs);
-%eeg3 = array2timetable(eeg3', 'SampleRate', fs);
-%eeg4 = array2timetable(eeg4', 'SampleRate', fs);
-%eeg = synchronize(eeg1,eeg2,eeg3,eeg4); % puts data from all 4 contacts into one table
-%eeg.Properties.VariableNames = ["Parietal", "Frontal", " ", "EMG"];
+eeg1 = array2timetable(eeg1', 'SampleRate', fs);
+eeg2 = array2timetable(eeg2', 'SampleRate', fs);
+eeg3 = array2timetable(eeg3', 'SampleRate', fs);
+eeg4 = array2timetable(eeg4', 'SampleRate', fs);
+eeg = synchronize(eeg1,eeg2,eeg3,eeg4); % puts data from all 4 contacts into one table
+eeg.Properties.VariableNames = ["Parietal", "Frontal", " ", "EMG"];
 
 % spectrogram
 %pspectrum(eeg1, "spectrogram", "FrequencyLimits", [0 100])
