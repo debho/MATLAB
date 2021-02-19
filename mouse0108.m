@@ -50,9 +50,7 @@ hold off
 %ylabel("Power")
 %hold off
 
-% plotting power spectra with FFT on 5-sec bins
-% split by behaviors (column 1) so that we can compare means
-
+% sleep
 Parr = [];
 eeg1Beh = find(behRanges(:,1) == 2); % eeg1
 for ii = 1:numel(eeg1Beh)
@@ -64,6 +62,9 @@ for ii = 1:numel(eeg1Beh)
 end
 figure;
 plot(F, mean(Parr));
+xlabel("Frequency (Hz)")
+ylabel("Mean Power")
+title("Mean Power against Frequency (Sleep)")
 % stats - Parr has 147 different values, you can extract freq band like:
 bandPowers = Parr(:,F>1 & F<4);
 % take mean of dim=2
@@ -71,8 +72,62 @@ bandPower = mean(bandPowers,2);
 % make sure it's relatively stable across each bin
 figure;
 plot(bandPower);
-% todo: now compare these values with another behavior
-% using anova1();
+title("Mean Power at 2Hz (Sleep)")
+
+% wake-still
+Parr2 = [];
+eeg1Beh2 = find(behRanges(:,1) == 4);
+for ii = 1:numel(eeg1Beh2)
+  tstart = (behRanges(eeg1Beh2(ii),2) - 1) * fs;
+  tend = behRanges(eeg1Beh2(ii),3) * fs;
+   pspec = array2timetable(eeg1.Var1(tstart:tend), "SampleRate", fs);
+   [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
+   Parr2(ii,:) = 10*log10(P);
+end
+
+figure;
+plot(F, mean(Parr2));
+xlabel("Frequency (Hz)")
+ylabel("Mean Power")
+title("Mean Power against Frequency (Wake-Still)")
+% extracting freq band between 1-4Hz
+bandPowers2 = Parr2(:,F>1 & F<4);
+% take mean of dim=2
+bandPower2 = mean(bandPowers2,2);
+% make sure it's relatively stable across each bin
+figure;
+plot(bandPower2);
+title("Mean Power at 2Hz (Wake-Still)")
+
+% walking
+Parr3 = [];
+eeg1Beh3 = find(behRanges(:,1) == 5);
+for ii = 1:numel(eeg1Beh3)
+  tstart = (behRanges(eeg1Beh3(ii),2) - 1) * fs;
+  tend = behRanges(eeg1Beh3(ii),3) * fs;
+   pspec = array2timetable(eeg1.Var1(tstart:tend), "SampleRate", fs);
+   [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
+   Parr3(ii,:) = 10*log10(P);
+end
+
+figure;
+plot(F, mean(Parr3));
+xlabel("Frequency (Hz)")
+ylabel("Mean Power")
+title("Mean Power against Frequency (Walking)")
+% extracting freq band between 1-4Hz
+bandPowers3 = Parr3(:,F>1 & F<4);
+% take mean of dim=2
+bandPower3 = mean(bandPowers3,2);
+% make sure it's relatively stable across each bin
+figure;
+plot(bandPower2);
+title("Mean Power at 2Hz (Walking)")
+
+% ANOVA
+
+
+
 
 
 
