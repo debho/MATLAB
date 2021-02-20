@@ -1,0 +1,11 @@
+dividing largest number of datapoints from a single EEG channel by 250 and then by 60: biologger collected about 87.84 minutes of data (1:27:50)
+
+TIME STAMPS:
+vid start: 10:43:04
+biologger off: 12:10:43 (assuming watch was shown at the time the biologger was switched off)
+
+biologger switched off at 1:27:39
+behavioral observation on BORIS stopped at 1:27:18
+biologger was switched on about 11 seconds before video footage started
+
+first 11 seconds and last 21 seconds of EEG data were out of the BORIS observations timeframe
