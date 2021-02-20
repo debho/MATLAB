@@ -125,6 +125,12 @@ plot(bandPower2);
 title("Mean Power at 2Hz (Walking)")
 
 % ANOVA
+meansCombined = zeros(552,3); %definitely not the most efficient way but i didn't know how else to join the columns for analysis
+meansCombined(:,1) = [bandPower; zeros(375,1)];
+meansCombined(:,2) = bandPower2;
+meansCombined(:,3) = [bandPower3; zeros(430,1)];
+meansCombined(meansCombined == 0) = NaN;
+p = anova1(meansCombined);
 
 
 
