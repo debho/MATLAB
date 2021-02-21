@@ -40,7 +40,7 @@ hold off
 
 % sleep
 Parr = [];
-eeg1Beh = find(behRanges(:,1) == 2); % eeg1
+eeg1Beh = find(behRanges(:,1) == 2); 
 for ii = 1:numel(eeg1Beh)
   tstart = (behRanges(eeg1Beh(ii),2) - 1) * fs;
   tend = behRanges(eeg1Beh(ii),3) * fs;
@@ -111,8 +111,6 @@ bandPower3 = mean(bandPowers3,2);
 figure;
 plot(bandPower3);
 title("Mean Power at 2Hz (Walking)")
-% NOTE: Mean Power graph was plotted wrongly before, updated the code so I
-% need to update the graph on Github
 
 % ANOVA
 meansCombined = zeros(552,3); %definitely not the most efficient way but i didn't know how else to join the columns for analysis
@@ -123,37 +121,15 @@ meansCombined(meansCombined == 0) = NaN;
 p = anova1(meansCombined);
 
 % testing time offset correction
-% twitch
-emgFixedfirst5 = eeg4(2751:77751,:); %start of where biologger data aligns with video
-%emgFixedfirst5 = array2timetable(emgFixedfirst5, "SampleRate", fs);
+% plot 5 minutes of EMG data alongside twitch data points
+emgFixedfirst5 = eeg4(2751:77750,:); % extracts EMG data for first 5 min of video
+
 Parr4 = [];
-eeg1Beh4 = find(behRanges(:,1) == 3);
-for ii = 1:40
-  tstart = (behRanges(eeg1Beh4(ii),2) - 1) * fs;
-  tend = behRanges(eeg1Beh4(ii),3) * fs;
-   pspec = array2timetable(emgFixedfirst5(tstart:tend), "SampleRate", fs);
+emgTwitch = find(behRanges(:,1) == 3); % identifies bins with twitches
+for ii = 1:numel(emgTwitch)
+  tstart = (behRanges(emgTwitch(ii),2) - 1) * fs;
+  tend = behRanges(emgTwitch(ii),3) * fs;
+   pspec = array2timetable(emgFixedfirst5.Var1(tstart:tend), "SampleRate", fs);
    [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
    Parr4(ii,:) = 10*log10(P);
 end
-
-figure;
-plot(F, mean(Parr4));
-xlabel("Frequency (Hz)")
-ylabel("Mean Power")
-title("Mean Power against Frequency (Twitch)")
-% extracting freq band between 1-4Hz
-bandPowers4 = Parr4(:,F>1 & F<4);
-% take mean of dim=2
-bandPower4 = mean(bandPowers4,2);
-% make sure it's relatively stable across each bin
-figure;
-plot(bandPower4);
-title("Mean Power at 2Hz (Twitch)")
-pspectrum(emgFixedfirst5, "spectrogram", "FrequencyLimits", [0 100])
-colormap(jet)
-caxis auto
-title("EMG Data for First 5 minutes")
-
-
-
-
