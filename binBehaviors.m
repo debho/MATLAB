@@ -2,7 +2,7 @@
 % it does exclude the possibility that bins overlap
 % looping is not the most efficient way of doing this, but since we only
 % perform it once, who cares, it is easier to follow/modify
-function behRanges = binBehaviors(binBeh,binInterval,doPlot)
+function behRanges = binBehaviors(binBeh,behTime,binInterval,doPlot)
 
 behRanges = [];
 rangeCount = 1;
@@ -12,17 +12,19 @@ for iBeh = 1:size(binBeh,2)
     isCounting = false;
     jj = 0;
     % subtract binInterval to force last entry >= binInterval
+    % !! binInterval is 'samples' rather the seconds if behTime has been
+    % adjusted with compressBy and offset
     for iTime = 1:numel(thisBehData)-binInterval
         if thisBehData(iTime) == 1 && ~isCounting
             behRanges(rangeCount,1) = iBeh; % index
-            behRanges(rangeCount,2) = iTime; % start
+            behRanges(rangeCount,2) = behTime(iTime); % start
             isCounting = true;
         end
         if isCounting
             jj = jj + 1;
         end
         if jj == binInterval
-            behRanges(rangeCount,3) = iTime; % end
+            behRanges(rangeCount,3) = behTime(iTime); % end
             rangeCount = rangeCount + 1;
             jj = 0;
             isCounting = false;
