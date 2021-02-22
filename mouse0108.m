@@ -40,6 +40,12 @@ axyODBA_t.Time = axyODBA_t.Time;
 % % % % eeg = synchronize(eeg_par,eeg_fro,eeg_emg); % puts data from all 4 contacts into one table
 % % % % eeg.Properties.VariableNames = ["Parietal", "Frontal", "EMG"];
 
+% important settings for messed up time alignment!
+[behNames,behTime,behExtract,extractedLabels,binBeh] = ...
+    extractBinaryBehaviors('boris_binary_20210108_mouse.csv',29,145,false);
+behRanges = binBehaviors(binBeh,behTime,5,false);
+
+%%
 close all
 % spectrogram
 figure('position',[0 0 1000 500]);
@@ -48,15 +54,22 @@ colormap(jet)
 % caxis auto
 caxis([-40 5]); % adjusted empirically
 title("Spectrogram of EEG Data")
-hold off
 
-% important settings for messed up time alignment!
-[behNames,behTime,behExtract,extractedLabels,binBeh] = ...
-    extractBinaryBehaviors('boris_binary_20210108_mouse.csv',29,145,false);
-behRanges = binBehaviors(binBeh,behTime,5,false);
+bTime = behTime/60/60;
+yyaxis right;
+colors = lines(5);
+lns = [];
+for ii = 1:5
+    ln = plot(bTime(binBeh(:,ii)==1),ii,'.','color',colors(ii,:),'markersize',15);
+    lns(ii) = ln(1);
+    hold on;
+end
+legend(lns,behNames);
+ylim([-10 20]);
+set(gca,'fontsize',14);
+set(gcf,'color','w');
 
-hold off
-
+%%
 % sleep
 Parr = [];
 eeg_parBeh = find(behRanges(:,1) == 2);
