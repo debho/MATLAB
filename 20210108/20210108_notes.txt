@@ -1,0 +1,5 @@
+- Ines used their camera to record
+- We forgot to record the moment the bio-logger was attached, but we do have when it was taken off (my watch is in view at the end)
+- Since EEG is 250Hz, you can backout when the recording started and align the video to the raw data
+- data.csv are int32 and type.csv are uint8
+- ch1: Parietal, ch2: Frontal, ch3: NC, ch4: EMG
