@@ -49,7 +49,7 @@ behRanges = binBehaviors(binBeh,behTime,5,false);
 close all
 % spectrogram
 figure('position',[0 0 1000 500]);
-pspectrum(eeg_par_t, "spectrogram", "FrequencyLimits", [0 35]); % ~delta–beta
+pspectrum(eeg_fro_t, "spectrogram", "FrequencyLimits", [0 35]); % ~delta–beta
 colormap(jet)
 % caxis auto
 caxis([-40 5]); % adjusted empirically
@@ -68,6 +68,36 @@ legend(lns,behNames);
 ylim([-10 20]);
 set(gca,'fontsize',14);
 set(gcf,'color','w');
+yticks([]);
+
+%%
+lns = [];
+figure('position',[0 0 1000 500]);
+plot(eeg_fro_t.Time,eeg_fro_t.Var1,'k');
+hold on;
+Hd = Filter_delta;
+deltaFilt = filter(Hd,eeg_fro_t.Var1);
+plot(eeg_fro_t.Time,deltaFilt,'r-','linewidth',1.5);
+lns(1) = plot(eeg_fro_t.Time,abs(hilbert(deltaFilt)),'r:');
+
+Hd = Filter_alpha;
+alphaFilt = filter(Hd,eeg_fro_t.Var1);
+lns(2) = plot(eeg_fro_t.Time,abs(hilbert(alphaFilt)),'b');
+
+ylim([-5 5]);
+colors = lines(5);
+for ii = 5
+    ln = plot(seconds(behTime(binBeh(:,ii)==1)),5,'.','color',colors(ii,:),'markersize',15);
+    lns(3) = ln(1);
+    hold on;
+end
+% legend(lns,behNames);
+legend(lns,{'Delta','Alpha','Walking'});
+ylim([-5 10]);
+set(gca,'fontsize',14);
+set(gcf,'color','w');
+yticks([]);
+grid on;
 
 %%
 % sleep
