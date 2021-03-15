@@ -1,15 +1,15 @@
 % reads data into matrices
-usePath = '/Users/matt/Downloads'; % Deb, just change this to where all the files are
+usePath = '/Users/deb/Desktop/mouse-ephys'; % Deb, just change this to where all the files are
 if ~exist('data','var')
-    load(fullfile(usePath,'/Users/matt/Downloads/20210311_RecWDebInes.mat'));
+    load(fullfile(usePath,'/Users/deb/Desktop/mouse-ephys/20210311_RecWDebInes.mat'));
 end
 
 [behNames,behTime,behExtract,extractedLabels,binBeh] = extractBinaryBehaviors(fullfile(usePath,...
-    'boris_binary_20210311_mouse.csv'),0,16,false);
+    'boris_binary_20210311_mouse.csv'),0,-17,false);
 behRanges = binBehaviors(binBeh,behTime,5,false);
 
 % ch1(type=2): ?, ch2 (type=3): ?, ch3(type=4): ?, ch4(type=5): ?
-fs = 250;
+fs = 241;
 close all
 figure('position',[0 0 1400 1000]);
 for iType = 2:5
@@ -30,7 +30,7 @@ for iType = 2:5
 
     pspectrum(eeg_t,"spectrogram","FrequencyLimits",[1 30]); % ~delta–beta
     colormap(jet)
-    caxis auto
+    caxis auto;
 %     caxis([-40 5]); % adjust empirically if you need to tune it
     title(sprintf("Spectrogram Ch%i",iType-1));
 
@@ -50,6 +50,10 @@ for iType = 2:5
     yticks([]);
     drawnow;
 end
+
+
+
+
 
     % fs_axy = 25;
     
