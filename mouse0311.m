@@ -102,16 +102,24 @@ plot(bandPower2);
 title("Mean Power at 2Hz (Wake-Still)")
 
 
-% ANOVA
+% ANOVA for 2Hz
 % hypothesis: band powers are different
 y = [bandPower;bandPower2];
 group = [zeros(size(bandPower));ones(size(bandPower2))];
 [~,~,stats] = anovan(y,group); % follow format in documentation
 results = multcompare(stats);
 
+% sleep and wake-still are different at 2Hz
 
-
-
+% means at 1Hz
+power1Hz = mean(bandPowers,1)';
+figure;
+plot(power1Hz);
+hold on
+power1Hz2 = mean(bandPowers2,1)';
+plot(power1Hz2);
+title("Mean Power at 1Hz")
+legend({'sleep', 'wake-still'});
 
     % fs_axy = 25;
     
