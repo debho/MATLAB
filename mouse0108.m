@@ -1,21 +1,27 @@
 % reads data into matrices
-if ~exist('data','var')
-    data = readmatrix('20210108_data.csv');
-    type = readmatrix('20210108_type.csv');
-end
+
+data = readmatrix('20210108_data.csv');
+type = readmatrix('20210108_type.csv');
+
 
 % ch1(type=2): Parietal, ch2 (type=3): Frontal, ch3(type=4): NC, ch4(type=5): EMG
 fs = 250;
-eeg_par = data(type == 2);
+eeg_par = double(data(type == 2));
+[B,I] = rmoutliers(eeg_par); % get indices of outliers
+eeg_par(I==1) = NaN; % set them to NaN
+eeg_par = fillmissing(eeg_par,'nearest'); % fill them in    
 eeg_par = normalize(eeg_par - median(eeg_par));
 eeg_par_t = array2timetable(eeg_par', 'SampleRate', fs);
 
-eeg_fro = data(type == 3);
+eeg_fro = double(data(type == 3));
 eeg_fro = equalVectors(eeg_fro,eeg_par);
+[B,I] = rmoutliers(eeg_fro); % get indices of outliers
+eeg_fro(I==1) = NaN; % set them to NaN
+eeg_fro = fillmissing(eeg_fro,'nearest'); % fill them in    
 eeg_fro = normalize(eeg_fro - median(eeg_fro));
 eeg_fro_t = array2timetable(eeg_fro', 'SampleRate', fs);
 
-eeg_emg = data(type == 5);
+eeg_emg = double(data(type == 5));
 eeg_emg = equalVectors(eeg_emg,eeg_par);
 eeg_emg = normalize(eeg_emg - median(eeg_emg));
 eeg_emg_t = array2timetable(eeg_emg', 'SampleRate', fs);
@@ -24,13 +30,13 @@ Hd = EMGFilter;
 emgFilt = filter(Hd,double(eeg_emg_t.Var1));
 
 % fs_axy = 25;
-axyx = data(type == 7);
+axyx = double(data(type == 7));
 axyx = equalVectors(axyx,eeg_par);
 
-axyy = data(type == 8);
+axyy = double(data(type == 8));
 axyy = equalVectors(axyy,eeg_par);
 
-axyz = data(type == 9);
+axyz = double(data(type == 9));
 axyz = equalVectors(axyz,eeg_par);
 
 axyODBA = normalize(abs(diff(axyx)) + abs(diff(axyy)) + abs(diff(axyz)),'range');
@@ -151,6 +157,7 @@ figure;
 plot(bandPower2);
 title("Mean Power at 2Hz (Wake-Still)")
 
+
 % walking
 Parr3 = [];
 eeg_parBeh3 = find(behRanges(:,1) == 5);
@@ -166,7 +173,7 @@ figure(hSpectrum);
 plot(F, mean(Parr3));
 xlabel("Frequency (Hz)")
 ylabel("Mean Power")
-title("Mean Power against Frequency (Walking)")
+title("Mean Power against Frequency")
 
 legend({'sleep','wake-still','walking'});
 % extracting freq band between 1-4Hz
@@ -178,7 +185,7 @@ figure;
 plot(bandPower3);
 title("Mean Power at 2Hz (Walking)")
 
-% ANOVA
+% ANOVA at 2Hz
 % hypothesis: band powers are different
 y = [bandPower;bandPower2;bandPower3];
 group = [zeros(size(bandPower));ones(size(bandPower2));2*ones(size(bandPower3))];
@@ -188,6 +195,19 @@ results = multcompare(stats);
 % you can see that group 2 (walking) is sig diff from others
 % but group 0&1 are not significant from each other
 
+% dealing with 1Hz
+% taking mean at 1Hz
+power1Hz = mean(bandPowers,1)';
+figure;
+plot(power1Hz);
+hold on
+power1Hz2 = mean(bandPowers2,1)';
+plot(power1Hz2);
+hold on
+power1Hz3 = mean(bandPowers3,1)';
+plot(power1Hz3);
+title("Mean Power at 1Hz")
+legend({'sleep', 'wake-still', 'walking'});
 
 % % % % meansCombined = zeros(552,3); %definitely not the most efficient way but i didn't know how else to join the columns for analysis
 % % % % meansCombined(:,1) = [bandPower; zeros(375,1)];
