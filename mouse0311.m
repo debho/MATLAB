@@ -12,7 +12,7 @@ behRanges = binBehaviors(binBeh,behTime,5,false);
 fs = 241;
 close all
 figure('position',[0 0 1400 1000]);
-for iType = 2:5
+for iType = 3
     subplot(2,2,iType-1);
     eeg = double(data(type == iType));
     % remove outliers, careful with this method, not perfect but looks like
@@ -50,6 +50,7 @@ for iType = 2:5
     yticks([]);
     drawnow;
 end
+hold off
 
 % power spectra
 % sleep
@@ -68,7 +69,8 @@ plot(F, mean(Parr));
 hold on; % for others!
 xlabel("Frequency (Hz)")
 ylabel("Mean Power")
-title("Mean Power against Frequency (Sleep)")
+title("Mean Power against Frequency")
+
 % extract freq band
 bandPowers = Parr(:,F>1 & F<4);
 % take mean of dim=2
@@ -79,30 +81,33 @@ plot(bandPower);
 title("Mean Power at 2Hz (Sleep)")
 
 % wake-still
-Parr = [];
-eeg_parBeh = find(behRanges(:,1) == 5);
-for ii = 1:numel(eeg_parBeh)
-    tstart = round(behRanges(eeg_parBeh(ii),2) * fs);
-    tend = round(behRanges(eeg_parBeh(ii),3) * fs);
+Parr2 = [];
+eeg_parBeh2 = find(behRanges(:,1) == 5);
+for ii = 1:numel(eeg_parBeh2)
+    tstart = round(behRanges(eeg_parBeh2(ii),2) * fs);
+    tend = round(behRanges(eeg_parBeh2(ii),3) * fs);
     pspec = array2timetable(eeg_t.Var1(tstart:tend), "SampleRate", fs);
     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
-    Parr(ii,:) = 10*log10(P);
+    Parr2(ii,:) = 10*log10(P);
 end
 
-hSpectrum = figure;
-plot(F, mean(Parr));
-hold on; % for others!
-xlabel("Frequency (Hz)")
-ylabel("Mean Power")
-title("Mean Power against Frequency (Wake-Still)")
-% extract freq band
-bandPowers = Parr(:,F>1 & F<4);
-% take mean of dim=2
-bandPower = mean(bandPowers,2);
-% make sure it's relatively stable across each bin
+
+figure(hSpectrum);
+plot(F, mean(Parr2));
+legend({'sleep','wake-still'});
+bandPowers2 = Parr2(:,F>1 & F<4);
+bandPower2 = mean(bandPowers2,2);
 figure;
-plot(bandPower);
+plot(bandPower2);
 title("Mean Power at 2Hz (Wake-Still)")
+
+
+% ANOVA
+% hypothesis: band powers are different
+y = [bandPower;bandPower2];
+group = [zeros(size(bandPower));ones(size(bandPower2))];
+[~,~,stats] = anovan(y,group); % follow format in documentation
+results = multcompare(stats);
 
 
 
