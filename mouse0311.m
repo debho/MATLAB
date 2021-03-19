@@ -1,3 +1,4 @@
+%%
 % reads data into matrices
 usePath = '/Users/deb/Desktop/mouse-ephys'; % Deb, just change this to where all the files are
 if ~exist('data','var')
@@ -8,6 +9,8 @@ end
     'boris_binary_20210311_mouse.csv'),0,-17,false);
 behRanges = binBehaviors(binBeh,behTime,5,false);
 
+%%
+% spectrograms
 % ch1(type=2): EMG, ch2 (type=3): ?, ch3(type=4): ?, ch4(type=5): ?
 fs = 241;
 close all
@@ -52,6 +55,7 @@ for iType = 3
 end
 hold off
 
+%%
 % power spectra
 % sleep
 Parr = [];
@@ -69,7 +73,7 @@ plot(F, mean(Parr));
 hold on; % for others!
 xlabel("Frequency (Hz)")
 ylabel("Mean Power")
-title("Mean Power against Frequency")
+title("Mean Power against Frequency, 03-11-20")
 
 % extract freq band
 bandPowers = Parr(:,F>1 & F<4);
@@ -78,7 +82,9 @@ bandPower = mean(bandPowers,2);
 % make sure it's relatively stable across each bin
 figure;
 plot(bandPower);
-title("Mean Power at 2Hz (Sleep)")
+title("Mean Delta Power (Sleep)")
+ylabel("Power")
+xlabel("Bins")
 
 % wake-still
 Parr2 = [];
@@ -95,11 +101,14 @@ end
 figure(hSpectrum);
 plot(F, mean(Parr2));
 legend({'sleep','wake-still'});
+
 bandPowers2 = Parr2(:,F>1 & F<4);
 bandPower2 = mean(bandPowers2,2);
 figure;
 plot(bandPower2);
-title("Mean Power at 2Hz (Wake-Still)")
+title("Mean Delta Power (Wake-Still)")
+ylabel("Power")
+xlabel("Bins")
 
 
 % ANOVA for 2Hz
@@ -110,16 +119,6 @@ group = [zeros(size(bandPower));ones(size(bandPower2))];
 results = multcompare(stats);
 
 % sleep and wake-still are different at 2Hz
-
-% means at 1Hz
-power1Hz = mean(bandPowers,1)';
-figure;
-plot(power1Hz);
-hold on
-power1Hz2 = mean(bandPowers2,1)';
-plot(power1Hz2);
-title("Mean Power at 1Hz")
-legend({'sleep', 'wake-still'});
 
     % fs_axy = 25;
     

@@ -120,9 +120,6 @@ end
 hSpectrum = figure;
 plot(F, mean(Parr));
 hold on; % for others!
-xlabel("Frequency (Hz)")
-ylabel("Mean Power")
-title("Mean Power against Frequency (Sleep)")
 % stats - Parr has 147 different values, you can extract freq band like:
 bandPowers = Parr(:,F>1 & F<4);
 % take mean of dim=2
@@ -130,7 +127,9 @@ bandPower = mean(bandPowers,2);
 % make sure it's relatively stable across each bin
 figure;
 plot(bandPower);
-title("Mean Power at 2Hz (Sleep)")
+title("Mean Delta Power (Sleep)")
+ylabel("Power")
+xlabel("Bins")
 
 % wake-still
 Parr2 = [];
@@ -145,9 +144,6 @@ end
 
 figure(hSpectrum);
 plot(F, mean(Parr2));
-xlabel("Frequency (Hz)")
-ylabel("Mean Power")
-title("Mean Power against Frequency (Wake-Still)")
 % extracting freq band between 1-4Hz
 bandPowers2 = Parr2(:,F>1 & F<4);
 % take mean of dim=2
@@ -155,7 +151,9 @@ bandPower2 = mean(bandPowers2,2);
 % make sure it's relatively stable across each bin
 figure;
 plot(bandPower2);
-title("Mean Power at 2Hz (Wake-Still)")
+title("Mean Delta Power (Wake-Still)")
+ylabel("Power")
+xlabel("Bins")
 
 
 % walking
@@ -173,9 +171,9 @@ figure(hSpectrum);
 plot(F, mean(Parr3));
 xlabel("Frequency (Hz)")
 ylabel("Mean Power")
-title("Mean Power against Frequency")
-
+title("Mean Power against Frequency, 01-08-2021")
 legend({'sleep','wake-still','walking'});
+
 % extracting freq band between 1-4Hz
 bandPowers3 = Parr3(:,F>1 & F<4);
 % take mean of dim=2
@@ -183,7 +181,9 @@ bandPower3 = mean(bandPowers3,2);
 % make sure it's relatively stable across each bin
 figure;
 plot(bandPower3);
-title("Mean Power at 2Hz (Walking)")
+title("Mean Delta Power (Walking)")
+ylabel("Power")
+xlabel("Bins")
 
 % ANOVA at 2Hz
 % hypothesis: band powers are different
@@ -194,20 +194,6 @@ results = multcompare(stats);
 
 % you can see that group 2 (walking) is sig diff from others
 % but group 0&1 are not significant from each other
-
-% dealing with 1Hz
-% taking mean at 1Hz
-power1Hz = mean(bandPowers,1)';
-figure;
-plot(power1Hz);
-hold on
-power1Hz2 = mean(bandPowers2,1)';
-plot(power1Hz2);
-hold on
-power1Hz3 = mean(bandPowers3,1)';
-plot(power1Hz3);
-title("Mean Power at 1Hz")
-legend({'sleep', 'wake-still', 'walking'});
 
 % % % % meansCombined = zeros(552,3); %definitely not the most efficient way but i didn't know how else to join the columns for analysis
 % % % % meansCombined(:,1) = [bandPower; zeros(375,1)];
