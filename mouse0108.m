@@ -57,9 +57,9 @@ close all
 figure('position',[0 0 1000 500]);
 pspectrum(eeg_fro_t, "spectrogram", "FrequencyLimits", [0 35]); % ~delta–beta
 colormap(jet)
-% caxis auto
+%caxis auto
 caxis([-40 5]); % adjusted empirically
-title("Spectrogram of EEG Data")
+title("Spectrogram of EEG Data, 01-08-2021")
 
 bTime = behTime/60/60;
 yyaxis right;
@@ -185,7 +185,7 @@ title("Mean Delta Power (Walking)")
 ylabel("Power")
 xlabel("Bins")
 
-% ANOVA at 2Hz
+% ANOVA for delta power
 % hypothesis: band powers are different
 y = [bandPower;bandPower2;bandPower3];
 group = [zeros(size(bandPower));ones(size(bandPower2));2*ones(size(bandPower3))];
@@ -218,3 +218,6 @@ results = multcompare(stats);
 % % % %     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
 % % % %     Parr4(ii,:) = 10*log10(P);
 % % % % end
+
+eeg_t = eeg_par_t;
+save('20210108_var.mat')

@@ -35,7 +35,7 @@ for iType = 3
     colormap(jet)
     caxis auto;
 %     caxis([-40 5]); % adjust empirically if you need to tune it
-    title(sprintf("Spectrogram Ch%i",iType-1));
+    title(sprintf("Spectrogram Ch%i, 03-11-2021",iType-1));
 
     bTime = behTime/60;
     yyaxis right;
@@ -133,3 +133,5 @@ results = multcompare(stats);
 % axyODBA = normalize(abs(diff(axyx)) + abs(diff(axyy)) + abs(diff(axyz)),'range');
 % axyODBA_t = array2timetable(axyODBA','SampleRate',fs);
 % axyODBA_t.Time = axyODBA_t.Time;
+
+save('20210311_var.mat')
