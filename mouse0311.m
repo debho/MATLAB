@@ -84,11 +84,12 @@ for freqType = 0:3
     figure(deltaSleep);
     plot(bandPower);
     hold on;
-    title("Mean Delta Power (Sleep)")
+    title("Mean Delta Power (Sleep), 03-11-2021")
     ylabel("Power")
     xlabel("Bins")
 end
 legend({'1Hz','2Hz','3Hz','4Hz'});
+hold off;
 
 
 % wake-still
@@ -105,13 +106,19 @@ figure(hSpectrum);
 plot(F, mean(Parr2));
 legend({'sleep','wake-still'});
 
-bandPowers2 = Parr2(:,F>1 & F<4);
-bandPower2 = mean(bandPowers2,2);
-figure;
-plot(bandPower2);
-title("Mean Delta Power (Wake-Still)")
-ylabel("Power")
-xlabel("Bins")
+deltaWake = figure;
+for freqType = 0:3
+    bandPowers2 = Parr2(:,F>freqType & F<freqType + 1);
+    bandPower2 = mean(bandPowers2,2);
+    figure(deltaWake);
+    plot(bandPower2);
+    hold on;
+    title("Mean Delta Power (Wake-Still)")
+    ylabel("Power")
+    xlabel("Bins")
+end
+legend({'1Hz','2Hz','3Hz','4Hz'});
+hold off;
 
 
 % ANOVA for delta power
@@ -120,6 +127,7 @@ y = [bandPower;bandPower2];
 group = [zeros(size(bandPower));ones(size(bandPower2))];
 [~,~,stats] = anovan(y,group); % follow format in documentation
 results = multcompare(stats);
+yticklabels({'wake-still','sleep'});
 % sleep and wake-still have different delta power
 
 %% axy code that we don't need for now
