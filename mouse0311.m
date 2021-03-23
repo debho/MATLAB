@@ -2,7 +2,7 @@
 % reads data into matrices
 usePath = '/Users/deb/Desktop/mouse-ephys'; % Deb, just change this to where all the files are
 if ~exist('data','var')
-    load(fullfile(usePath,'/Users/deb/Desktop/mouse-ephys/20210311_RecWDebInes.mat'));
+    load(fullfile(usePath,'/20210311_RecWDebInes.mat'));
 end
 
 [behNames,behTime,behExtract,extractedLabels,binBeh] = extractBinaryBehaviors(fullfile(usePath,...
@@ -23,20 +23,19 @@ for iType = 3
     [B,I] = rmoutliers(eeg); % get indices of outliers
     eeg(I==1) = NaN; % set them to NaN
     eeg = fillmissing(eeg,'nearest'); % fill them in
-    
     eeg = normalize(eeg - median(eeg));
     eeg_t = array2timetable(eeg','SampleRate',fs);
 
     % not sure what this is used for?
     % Hd = EMGFilter;
     % emgFilt = filter(Hd,double(eeg_emg_t.Var1));
-
+    
+    % codes spectrograms
     pspectrum(eeg_t,"spectrogram","FrequencyLimits",[1 30]); % ~delta–beta
     colormap(jet)
     caxis auto;
-%     caxis([-40 5]); % adjust empirically if you need to tune it
     title(sprintf("Spectrogram Ch%i, 03-11-2021",iType-1));
-
+    % puts behavioral observations on top of spectrogram
     bTime = behTime/60;
     yyaxis right;
     colors = lines(5);
@@ -59,10 +58,10 @@ hold off
 % power spectra
 % sleep
 Parr = [];
-eeg_parBeh = find(behRanges(:,1) == 3);
-for ii = 1:numel(eeg_parBeh)
-    tstart = round(behRanges(eeg_parBeh(ii),2) * fs);
-    tend = round(behRanges(eeg_parBeh(ii),3) * fs);
+eeg_Beh = find(behRanges(:,1) == 3);
+for ii = 1:numel(eeg_Beh)
+    tstart = round(behRanges(eeg_Beh(ii),2) * fs);
+    tend = round(behRanges(eeg_Beh(ii),3) * fs);
     pspec = array2timetable(eeg_t.Var1(tstart:tend), "SampleRate", fs);
     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
     Parr(ii,:) = 10*log10(P);
@@ -75,29 +74,33 @@ xlabel("Frequency (Hz)")
 ylabel("Mean Power")
 title("Mean Power against Frequency, 03-11-20")
 
-% extract freq band
-bandPowers = Parr(:,F>1 & F<4);
-% take mean of dim=2
-bandPower = mean(bandPowers,2);
-% make sure it's relatively stable across each bin
-figure;
-plot(bandPower);
-title("Mean Delta Power (Sleep)")
-ylabel("Power")
-xlabel("Bins")
+deltaSleep = figure;
+for freqType = 0:3
+    % extract freq band
+    bandPowers = Parr(:,F>freqType & F<freqType + 1);
+    % take mean of dim=2 (columns)
+    bandPower = mean(bandPowers,2);
+    % make sure it's relatively stable across each bin
+    figure(deltaSleep);
+    plot(bandPower);
+    hold on;
+    title("Mean Delta Power (Sleep)")
+    ylabel("Power")
+    xlabel("Bins")
+end
+legend({'1Hz','2Hz','3Hz','4Hz'});
+
 
 % wake-still
 Parr2 = [];
-eeg_parBeh2 = find(behRanges(:,1) == 5);
-for ii = 1:numel(eeg_parBeh2)
-    tstart = round(behRanges(eeg_parBeh2(ii),2) * fs);
-    tend = round(behRanges(eeg_parBeh2(ii),3) * fs);
+eeg_Beh2 = find(behRanges(:,1) == 5);
+for ii = 1:numel(eeg_Beh2)
+    tstart = round(behRanges(eeg_Beh2(ii),2) * fs);
+    tend = round(behRanges(eeg_Beh2(ii),3) * fs);
     pspec = array2timetable(eeg_t.Var1(tstart:tend), "SampleRate", fs);
     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
     Parr2(ii,:) = 10*log10(P);
 end
-
-
 figure(hSpectrum);
 plot(F, mean(Parr2));
 legend({'sleep','wake-still'});
@@ -111,15 +114,15 @@ ylabel("Power")
 xlabel("Bins")
 
 
-% ANOVA for 2Hz
+% ANOVA for delta power
 % hypothesis: band powers are different
 y = [bandPower;bandPower2];
 group = [zeros(size(bandPower));ones(size(bandPower2))];
 [~,~,stats] = anovan(y,group); % follow format in documentation
 results = multcompare(stats);
+% sleep and wake-still have different delta power
 
-% sleep and wake-still are different at 2Hz
-
+%% axy code that we don't need for now
     % fs_axy = 25;
     
 %     axyx = double(data(type == 7));
@@ -133,5 +136,5 @@ results = multcompare(stats);
 % axyODBA = normalize(abs(diff(axyx)) + abs(diff(axyy)) + abs(diff(axyz)),'range');
 % axyODBA_t = array2timetable(axyODBA','SampleRate',fs);
 % axyODBA_t.Time = axyODBA_t.Time;
-
-save('20210311_var.mat')
+%%
+save('20210311_var.mat') % saves variables into a .mat file
