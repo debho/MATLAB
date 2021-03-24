@@ -110,25 +110,34 @@ end
 %% do all your figure stuff in one place so you can run this section separately
 close all
 lw = 2;
-hSpectrum = ff(1000,500);
-plot(F,mean(Parr_sleep),'linewidth',lw);
-hold on; % for others!
-xlabel("Frequency (Hz)")
-ylabel("Mean Power")
-title("Mean Power against Frequency, 03-11-20")
-plot(F, mean(Parr_wake_still),'linewidth',lw);
-set(gca,'fontsize',16);
-grid on;
+hSpectrum = ff(1400,500);
+usexlims = [[0,100];[0,10]];
+for iPlot = 1:2
+    subplot(1,2,iPlot);
+    plot(F,mean(Parr_sleep),'linewidth',lw);
+    hold on; % for others!
+    xlabel("Frequency (Hz)")
+    ylabel("Mean Power")
+    plot(F, mean(Parr_wake_still),'linewidth',lw);
+    set(gca,'fontsize',16);
+    grid on;
 
-pThresh = [0.001, 0.01, 0.05];
-colors = gray(4);
-plotAt = max(ylim); % just find a place to plot the asterik
-for iThresh = 1:numel(pThresh)
-    useXlocs = find(pvalue_at_F < pThresh(iThresh));
-    plot(F(useXlocs),ones(size(useXlocs))*(plotAt-iThresh+1),'*','color',colors(iThresh,:));
+    pThresh = [0.001, 0.01, 0.05];
+    colors = gray(4);
+    plotAt = max(ylim); % just find a place to plot the asterik
+    for iThresh = 1:numel(pThresh)
+        useXlocs = find(pvalue_at_F < pThresh(iThresh));
+        plot(F(useXlocs),ones(size(useXlocs))*(plotAt-iThresh+1),'*','color',colors(iThresh,:));
+    end
+
+    xlim(usexlims(iPlot,:));
+    if iPlot == 1
+        title("Mean Power against Frequency, 03-11-20");
+        legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
+    else
+        title('zoomed on low frequencies');
+    end
 end
-
-legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
 
 
 % % % % deltaWake = figure;
