@@ -1,21 +1,29 @@
+close all; % closes all figures, can probably take this out once i'm done fixing code
 for i = 1:2
     if(i==1)
         load('20210108_var.mat')
     else
         load('20210311_var.mat')
     end
-    % do plots
+    % do plots   
     % SPECTROGRAM
-    % current issues: spectrograms aren't printing on the same figure
-    % BORIS plot isn't showing up on Day 1
+    % current issues: spectrograms still showing separately
     figure('position',[0 0 2800 1000]);
+   
     subplot(1,2,i);
     pspectrum(eeg_t,"spectrogram","FrequencyLimits",[1 30]);
     colormap(jet);
-    caxis auto;
+    if(i==1)
+        caxis([-40 5]); % manually adjusts for Day 1
+    else
+        caxis auto;
+    end
     title(sprintf("Spectrogram for Day %i",i));
-    
-    bTime = behTime/60;
+    if(i==1)
+        bTime = behTime/60/60;
+    else
+        bTime = behTime/60;
+    end
     yyaxis right;
     colors = lines(5);
     lns = [];
