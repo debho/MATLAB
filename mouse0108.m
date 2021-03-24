@@ -107,21 +107,21 @@ grid on;
 
 %%
 % sleep
-Parr = [];
-eeg_parBeh = find(behRanges(:,1) == 2);
-for ii = 1:numel(eeg_parBeh)
-    tstart = round(behRanges(eeg_parBeh(ii),2) * fs);
-    tend = round(behRanges(eeg_parBeh(ii),3) * fs);
+Parr_sleep = [];
+eeg_Beh = find(behRanges(:,1) == 2);
+for ii = 1:numel(eeg_Beh)
+    tstart = round(behRanges(eeg_Beh(ii),2) * fs);
+    tend = round(behRanges(eeg_Beh(ii),3) * fs);
     pspec = array2timetable(eeg_par_t.Var1(tstart:tend), "SampleRate", fs);
     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
-    Parr(ii,:) = 10*log10(P);
+    Parr_sleep(ii,:) = 10*log10(P);
 end
 
 hSpectrum = figure;
-plot(F, mean(Parr));
+plot(F, mean(Parr_sleep));
 hold on; % for others!
 % stats - Parr has 147 different values, you can extract freq band like:
-bandPowers = Parr(:,F>1 & F<4);
+bandPowers = Parr_sleep(:,F>1 & F<4);
 % take mean of dim=2
 bandPower = mean(bandPowers,2);
 % make sure it's relatively stable across each bin
@@ -132,20 +132,20 @@ ylabel("Power")
 xlabel("Bins")
 
 % wake-still
-Parr2 = [];
-eeg_parBeh2 = find(behRanges(:,1) == 4);
-for ii = 1:numel(eeg_parBeh2)
-    tstart = round(behRanges(eeg_parBeh2(ii),2) * fs);
-    tend = round(behRanges(eeg_parBeh2(ii),3) * fs);
+Parr_wake_still = [];
+eeg_Beh2 = find(behRanges(:,1) == 4);
+for ii = 1:numel(eeg_Beh2)
+    tstart = round(behRanges(eeg_Beh2(ii),2) * fs);
+    tend = round(behRanges(eeg_Beh2(ii),3) * fs);
     pspec = array2timetable(eeg_par_t.Var1(tstart:tend), "SampleRate", fs);
     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
-    Parr2(ii,:) = 10*log10(P);
+    Parr_wake_still(ii,:) = 10*log10(P);
 end
 
 figure(hSpectrum);
-plot(F, mean(Parr2));
+plot(F, mean(Parr_wake_still));
 % extracting freq band between 1-4Hz
-bandPowers2 = Parr2(:,F>1 & F<4);
+bandPowers2 = Parr_wake_still(:,F>1 & F<4);
 % take mean of dim=2
 bandPower2 = mean(bandPowers2,2);
 % make sure it's relatively stable across each bin
@@ -157,25 +157,25 @@ xlabel("Bins")
 
 
 % walking
-Parr3 = [];
-eeg_parBeh3 = find(behRanges(:,1) == 5);
-for ii = 1:numel(eeg_parBeh3)
-    tstart = round(behRanges(eeg_parBeh3(ii),2) * fs);
-    tend = round(behRanges(eeg_parBeh3(ii),3) * fs);
+Parr_walk = [];
+eeg_Beh3 = find(behRanges(:,1) == 5);
+for ii = 1:numel(eeg_Beh3)
+    tstart = round(behRanges(eeg_Beh3(ii),2) * fs);
+    tend = round(behRanges(eeg_Beh3(ii),3) * fs);
     pspec = array2timetable(eeg_par_t.Var1(tstart:tend), "SampleRate", fs);
     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
-    Parr3(ii,:) = 10*log10(P);
+    Parr_walk(ii,:) = 10*log10(P);
 end
 
 figure(hSpectrum);
-plot(F, mean(Parr3));
+plot(F, mean(Parr_walk));
 xlabel("Frequency (Hz)")
 ylabel("Mean Power")
 title("Mean Power against Frequency, 01-08-2021")
 legend({'sleep','wake-still','walking'});
 
 % extracting freq band between 1-4Hz
-bandPowers3 = Parr3(:,F>1 & F<4);
+bandPowers3 = Parr_walk(:,F>1 & F<4);
 % take mean of dim=2
 bandPower3 = mean(bandPowers3,2);
 % make sure it's relatively stable across each bin
@@ -220,4 +220,4 @@ results = multcompare(stats);
 % % % % end
 
 eeg_t = eeg_par_t;
-save('20210108_var.mat')
+save('20210108_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','Parr_walk','eeg_Beh3','bTime') % saves variables into a .mat file

@@ -1,7 +1,7 @@
 %%
 % reads data into matrices
 usePath = '/Users/deb/Desktop/mouse-ephys'; % Deb, just change this to where all the files are
-usePath = '/Users/matt/Downloads';
+% usePath = '/Users/matt/Downloads';
 if ~exist('data','var')
     load(fullfile(usePath,'/20210311_RecWDebInes.mat'));
 end
@@ -132,7 +132,7 @@ for iPlot = 1:2
 
     xlim(usexlims(iPlot,:));
     if iPlot == 1
-        title("Mean Power against Frequency, 03-11-20");
+        title("Mean Power against Frequency, 03-11-21");
         legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
     else
         title('zoomed on low frequencies');
@@ -180,4 +180,4 @@ end
 % axyODBA_t.Time = axyODBA_t.Time;
 %%
 
-% save('20210311_var.mat') % saves variables into a .mat file
+save('20210311_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','bTime') % saves variables into a .mat file
