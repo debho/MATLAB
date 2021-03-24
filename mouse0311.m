@@ -120,15 +120,15 @@ plot(F, mean(Parr_wake_still),'linewidth',lw);
 set(gca,'fontsize',16);
 grid on;
 
-pThresh = [0.05, 0.01, 0.001];
-colors = winter(numel(pThresh));
+pThresh = [0.001, 0.01, 0.05];
+colors = gray(4);
 plotAt = max(ylim); % just find a place to plot the asterik
 for iThresh = 1:numel(pThresh)
     useXlocs = find(pvalue_at_F < pThresh(iThresh));
-    plot(F(useXlocs),ones(size(useXlocs))*(plotAt-iThresh),'*','color',colors(iThresh,:));
+    plot(F(useXlocs),ones(size(useXlocs))*(plotAt-iThresh+1),'*','color',colors(iThresh,:));
 end
 
-legend({'sleep','wake-still','p < 0.05','p < 0.01','p < 0.001'},'location','southwest');
+legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
 
 
 % % % % deltaWake = figure;
