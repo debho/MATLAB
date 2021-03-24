@@ -1,4 +1,4 @@
-usePath = '/Users/matt/Downloads';
+usePath = '/Users/deb/Desktop/mouse-ephys/';
 
 close all; % closes all figures, can probably take this out once i'm done fixing code
 % make figures BEFORE loop
@@ -13,10 +13,8 @@ for i = 1:2
     else
         load(fullfile(usePath,'20210311_var.mat'))
     end
-    % do plots   
-    % SPECTROGRAM
-    % current issues: spectrograms still showing separately
-    
+    % DO PLOTS   
+    %% SPECTROGRAM
     % select figures like this to plot multiple things
     figure(hspectrum);
     subplot(2,1,i);
@@ -28,16 +26,7 @@ for i = 1:2
         caxis auto;
     end
     title(sprintf("Spectrogram for Day %i",i));
-    
-    figure(hpower);
-    subplot(2,1,i);
-    % !! this is funny business, I would try to fix these things before saving
-    % the .mat file
-    if(i==1)
-        bTime = behTime/60/60;
-    else
-        bTime = behTime/60;
-    end
+    % puts behavior plot on top of spectrogram
     yyaxis right;
     colors = lines(5);
     lns = [];
@@ -51,8 +40,11 @@ for i = 1:2
     set(gca,'fontsize',14);
     set(gcf,'color','w');
     yticks([]);
-    
     drawnow;
+    
+    %% POWER SPECTRA
+    figure(hpower);
+    
 end
 
 % STATISTICAL ANALYSIS
