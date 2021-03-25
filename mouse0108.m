@@ -261,4 +261,4 @@ end
 
 %% SAVES VARIABLES
 eeg_t = eeg_par_t;
-save('20210108_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','Parr_walk','eeg_Beh3','bTime') % saves variables into a .mat file
+save('20210108_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','Parr_walk','eeg_Beh3','bTime','F') % saves variables into a .mat file

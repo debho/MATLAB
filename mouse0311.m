@@ -135,7 +135,7 @@ for iPlot = 1:2
         title("Mean Power against Frequency, 03-11-21");
         legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
     else
-        title('zoomed on low frequencies');
+        title('Zoomed-in on low frequencies');
     end
 end
 
@@ -180,4 +180,4 @@ end
 % axyODBA_t.Time = axyODBA_t.Time;
 %%
 
-save('20210311_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','bTime') % saves variables into a .mat file
+save('20210311_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','bTime','F') % saves variables into a .mat file
