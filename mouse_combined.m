@@ -95,3 +95,40 @@ for iPlot = 1:2
         title('Zoomed-in on low frequencies');
     end
 end
+
+% wake-still
+for iFreq = 1:numel(F)
+    x = [Parr_wake_still1(:,iFreq);Parr_wake_still2(:,iFreq)];
+    groups = [zeros(size(Parr_wake_still1(:,iFreq)));ones(size(Parr_wake_still2(:,iFreq)))];
+    pvalue_at_F(iFreq) = anova1(x,groups,'off');
+end
+
+lw = 2;
+hSpectrum2 = ff(1400,500);
+usexlims = [[0,100];[0,10]];
+for iPlot = 1:2
+    subplot(1,2,iPlot);
+    plot(F,mean(Parr_wake_still1),'linewidth',lw);
+    hold on;
+    xlabel("Frequency (Hz)")
+    ylabel("Mean Power")
+    plot(F, mean(Parr_wake_still2),'linewidth',lw);
+    set(gca,'fontsize',16);
+    grid on;
+
+    pThresh = [0.001, 0.01, 0.05];
+    colors = gray(4);
+    plotAt = max(ylim); % just find a place to plot the asterik
+    for iThresh = 1:numel(pThresh)
+        useXlocs = find(pvalue_at_F < pThresh(iThresh));
+        plot(F(useXlocs),ones(size(useXlocs))*(plotAt-iThresh+1),'*','color',colors(iThresh,:));
+    end
+
+    xlim(usexlims(iPlot,:));
+    if iPlot == 1
+        title("Mean Power against Frequency, Wake-Still");
+        legend({'Day 1','Day 2','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
+    else
+        title('Zoomed-in on low frequencies');
+    end
+end
