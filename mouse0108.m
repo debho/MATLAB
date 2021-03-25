@@ -1,8 +1,8 @@
+%%
 % reads data into matrices
 
 data = readmatrix('20210108_data.csv');
 type = readmatrix('20210108_type.csv');
-
 
 % ch1(type=2): Parietal, ch2 (type=3): Frontal, ch3(type=4): NC, ch4(type=5): EMG
 fs = 250;
@@ -51,9 +51,8 @@ axyODBA_t.Time = axyODBA_t.Time;
     extractBinaryBehaviors('boris_binary_20210108_mouse.csv',29,145,false);
 behRanges = binBehaviors(binBeh,behTime,5,false);
 
-%%
+%% SPECTROGRAM
 close all
-% spectrogram
 figure('position',[0 0 1000 500]);
 pspectrum(eeg_fro_t, "spectrogram", "FrequencyLimits", [0 35]); % ~delta–beta
 colormap(jet)
@@ -76,7 +75,7 @@ set(gca,'fontsize',14);
 set(gcf,'color','w');
 yticks([]);
 
-%%
+%% DELTA-ALPHA WALKING
 lns = [];
 figure('position',[0 0 1000 500]);
 plot(eeg_fro_t.Time,eeg_fro_t.Var1,'k');
@@ -105,7 +104,7 @@ set(gcf,'color','w');
 yticks([]);
 grid on;
 
-%%
+%% POWER SPECTRA
 % sleep
 Parr_sleep = [];
 eeg_Beh = find(behRanges(:,1) == 2);
@@ -116,20 +115,6 @@ for ii = 1:numel(eeg_Beh)
     [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
     Parr_sleep(ii,:) = 10*log10(P);
 end
-
-hSpectrum = figure;
-plot(F, mean(Parr_sleep));
-hold on; % for others!
-% stats - Parr has 147 different values, you can extract freq band like:
-bandPowers = Parr_sleep(:,F>1 & F<4);
-% take mean of dim=2
-bandPower = mean(bandPowers,2);
-% make sure it's relatively stable across each bin
-figure;
-plot(bandPower);
-title("Mean Delta Power (Sleep)")
-ylabel("Power")
-xlabel("Bins")
 
 % wake-still
 Parr_wake_still = [];
@@ -142,20 +127,6 @@ for ii = 1:numel(eeg_Beh2)
     Parr_wake_still(ii,:) = 10*log10(P);
 end
 
-figure(hSpectrum);
-plot(F, mean(Parr_wake_still));
-% extracting freq band between 1-4Hz
-bandPowers2 = Parr_wake_still(:,F>1 & F<4);
-% take mean of dim=2
-bandPower2 = mean(bandPowers2,2);
-% make sure it's relatively stable across each bin
-figure;
-plot(bandPower2);
-title("Mean Delta Power (Wake-Still)")
-ylabel("Power")
-xlabel("Bins")
-
-
 % walking
 Parr_walk = [];
 eeg_Beh3 = find(behRanges(:,1) == 5);
@@ -167,34 +138,103 @@ for ii = 1:numel(eeg_Beh3)
     Parr_walk(ii,:) = 10*log10(P);
 end
 
-figure(hSpectrum);
-plot(F, mean(Parr_walk));
-xlabel("Frequency (Hz)")
-ylabel("Mean Power")
-title("Mean Power against Frequency, 01-08-2021")
-legend({'sleep','wake-still','walking'});
+pvalue_at_F = NaN(size(F));
+for iFreq = 1:numel(F)
+    x = [Parr_sleep(:,iFreq);Parr_wake_still(:,iFreq);Parr_walk(:,iFreq)];
+    groups = [zeros(size(Parr_sleep(:,iFreq)));ones(size(Parr_wake_still(:,iFreq)));2*ones(size(Parr_walk(:,iFreq)))];
+    pvalue_at_F(iFreq) = anova1(x,groups,'off');
+end
+
+close all
+lw = 2;
+hSpectrum = ff(1400,500);
+usexlims = [[0,100];[0,10]];
+for iPlot = 1:2
+    subplot(1,2,iPlot);
+    plot(F,mean(Parr_sleep),'linewidth',lw);
+    hold on; % for others!
+    xlabel("Frequency (Hz)")
+    ylabel("Mean Power")
+    plot(F, mean(Parr_wake_still),'linewidth',lw);
+    plot(F, mean(Parr_walk),'linewidth',lw);
+    set(gca,'fontsize',16);
+    grid on;
+
+    pThresh = [0.001, 0.01, 0.05];
+    colors = gray(4);
+    plotAt = max(ylim); % just find a place to plot the asterik
+    for iThresh = 1:numel(pThresh)
+        useXlocs = find(pvalue_at_F < pThresh(iThresh));
+        plot(F(useXlocs),ones(size(useXlocs))*(plotAt-iThresh+1),'*','color',colors(iThresh,:));
+    end
+
+    xlim(usexlims(iPlot,:));
+    if iPlot == 1
+        title("Mean Power against Frequency, 01-08-21");
+        legend({'sleep','wake-still','walking','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
+    else
+        title('Zoomed-in on low frequencies');
+    end
+end
+
+%% OLD PSPEC CODE
+%hSpectrum = figure;
+%plot(F, mean(Parr_sleep));
+%hold on; % for others!
+% stats - Parr has 147 different values, you can extract freq band like:
+%bandPowers = Parr_sleep(:,F>1 & F<4);
+% take mean of dim=2
+%bandPower = mean(bandPowers,2);
+% make sure it's relatively stable across each bin
+%figure;
+%plot(bandPower);
+%title("Mean Delta Power (Sleep)")
+%ylabel("Power")
+%xlabel("Bins")
+
+%figure(hSpectrum);
+%plot(F, mean(Parr_wake_still));
+% extracting freq band between 1-4Hz
+%bandPowers2 = Parr_wake_still(:,F>1 & F<4);
+% take mean of dim=2
+%bandPower2 = mean(bandPowers2,2);
+% make sure it's relatively stable across each bin
+%figure;
+%plot(bandPower2);
+%title("Mean Delta Power (Wake-Still)")
+%ylabel("Power")
+%xlabel("Bins")
+
+%figure(hSpectrum);
+%plot(F, mean(Parr_walk));
+%xlabel("Frequency (Hz)")
+%ylabel("Mean Power")
+%title("Mean Power against Frequency, 01-08-2021")
+%legend({'sleep','wake-still','walking'});
 
 % extracting freq band between 1-4Hz
-bandPowers3 = Parr_walk(:,F>1 & F<4);
+%bandPowers3 = Parr_walk(:,F>1 & F<4);
 % take mean of dim=2
-bandPower3 = mean(bandPowers3,2);
+%bandPower3 = mean(bandPowers3,2);
 % make sure it's relatively stable across each bin
-figure;
-plot(bandPower3);
-title("Mean Delta Power (Walking)")
-ylabel("Power")
-xlabel("Bins")
+%figure;
+%plot(bandPower3);
+%title("Mean Delta Power (Walking)")
+%ylabel("Power")
+%xlabel("Bins")
 
+%% STATISTICAL ANALYSIS
 % ANOVA for delta power
 % hypothesis: band powers are different
-y = [bandPower;bandPower2;bandPower3];
-group = [zeros(size(bandPower));ones(size(bandPower2));2*ones(size(bandPower3))];
-[~,~,stats] = anovan(y,group); % follow format in documentation
-results = multcompare(stats);
+%y = [bandPower;bandPower2;bandPower3];
+%group = [zeros(size(bandPower));ones(size(bandPower2));2*ones(size(bandPower3))];
+%[~,~,stats] = anovan(y,group); % follow format in documentation
+%results = multcompare(stats);
 
 % you can see that group 2 (walking) is sig diff from others
 % but group 0&1 are not significant from each other
 
+%% CODE THAT WE NO LONGER NEED
 % % % % meansCombined = zeros(552,3); %definitely not the most efficient way but i didn't know how else to join the columns for analysis
 % % % % meansCombined(:,1) = [bandPower; zeros(375,1)];
 % % % % meansCombined(:,2) = bandPower2;
@@ -219,5 +259,6 @@ results = multcompare(stats);
 % % % %     Parr4(ii,:) = 10*log10(P);
 % % % % end
 
+%% SAVES VARIABLES
 eeg_t = eeg_par_t;
 save('20210108_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','Parr_walk','eeg_Beh3','bTime') % saves variables into a .mat file
