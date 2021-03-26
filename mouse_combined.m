@@ -1,4 +1,5 @@
 usePath = '/Users/deb/Desktop/mouse-ephys/';
+usePath = '/Users/matt/Downloads';
 
 close all; % closes all figures, can probably take this out once i'm done fixing code
 % make figures BEFORE loop
@@ -61,10 +62,10 @@ end
 % sleep
 pvalue_at_F = NaN(size(F));
 for iFreq = 1:numel(F)
-    x = [Parr_sleep1(:,iFreq);Parr_sleep2(:,iFreq)];
-    groups = [zeros(size(Parr_sleep1(:,iFreq)));ones(size(Parr_sleep2(:,iFreq)))];
-    pvalue_at_F(iFreq) = anova1(x,groups,'off');
+    [h,p] = ttest2(Parr_sleep1(:,iFreq),Parr_sleep2(:,iFreq));
+    pvalue_at_F(iFreq) = p;
 end
+pvalue_at_F = bonf_holm(pvalue_at_F); % correct for mult. comp.
 
 lw = 2;
 hSpectrum = ff(1400,500);
@@ -98,10 +99,10 @@ end
 
 % wake-still
 for iFreq = 1:numel(F)
-    x = [Parr_wake_still1(:,iFreq);Parr_wake_still2(:,iFreq)];
-    groups = [zeros(size(Parr_wake_still1(:,iFreq)));ones(size(Parr_wake_still2(:,iFreq)))];
-    pvalue_at_F(iFreq) = anova1(x,groups,'off');
+    [h,p] = ttest2(Parr_wake_still1(:,iFreq),Parr_wake_still2(:,iFreq));
+    pvalue_at_F(iFreq) = p;
 end
+pvalue_at_F = bonf_holm(pvalue_at_F); % correct for mult. comp.
 
 lw = 2;
 hSpectrum2 = ff(1400,500);
