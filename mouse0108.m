@@ -127,21 +127,10 @@ for ii = 1:numel(eeg_Beh2)
     Parr_wake_still(ii,:) = 10*log10(P);
 end
 
-% walking
-Parr_walk = [];
-eeg_Beh3 = find(behRanges(:,1) == 5);
-for ii = 1:numel(eeg_Beh3)
-    tstart = round(behRanges(eeg_Beh3(ii),2) * fs);
-    tend = round(behRanges(eeg_Beh3(ii),3) * fs);
-    pspec = array2timetable(eeg_par_t.Var1(tstart:tend), "SampleRate", fs);
-    [P,F] = pspectrum(pspec, "FrequencyLimits", [0 100]);
-    Parr_walk(ii,:) = 10*log10(P);
-end
-
 pvalue_at_F = NaN(size(F));
 for iFreq = 1:numel(F)
-    x = [Parr_sleep(:,iFreq);Parr_wake_still(:,iFreq);Parr_walk(:,iFreq)];
-    groups = [zeros(size(Parr_sleep(:,iFreq)));ones(size(Parr_wake_still(:,iFreq)));2*ones(size(Parr_walk(:,iFreq)))];
+    x = [Parr_sleep(:,iFreq);Parr_wake_still(:,iFreq)];
+    groups = [zeros(size(Parr_sleep(:,iFreq)));ones(size(Parr_wake_still(:,iFreq)))];
     pvalue_at_F(iFreq) = anova1(x,groups,'off');
 end
 
@@ -156,7 +145,6 @@ for iPlot = 1:2
     xlabel("Frequency (Hz)")
     ylabel("Mean Power")
     plot(F, mean(Parr_wake_still),'linewidth',lw);
-    plot(F, mean(Parr_walk),'linewidth',lw);
     set(gca,'fontsize',16);
     grid on;
 
@@ -171,7 +159,7 @@ for iPlot = 1:2
     xlim(usexlims(iPlot,:));
     if iPlot == 1
         title("Mean Power against Frequency, 01-08-21");
-        legend({'sleep','wake-still','walking','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
+        legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
     else
         title('Zoomed-in on low frequencies');
     end
@@ -261,4 +249,4 @@ end
 
 %% SAVES VARIABLES
 eeg_t = eeg_par_t;
-save('20210108_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','Parr_walk','eeg_Beh3','bTime','F') % saves variables into a .mat file
+save('20210108_var.mat','eeg_t','fs','binBeh','behExtract','behNames','behRanges','behTime','Parr_sleep','Parr_wake_still','eeg_Beh','eeg_Beh2','bTime','F') % saves variables into a .mat file
