@@ -129,9 +129,8 @@ end
 
 pvalue_at_F = NaN(size(F));
 for iFreq = 1:numel(F)
-    x = [Parr_sleep(:,iFreq);Parr_wake_still(:,iFreq)];
-    groups = [zeros(size(Parr_sleep(:,iFreq)));ones(size(Parr_wake_still(:,iFreq)))];
-    pvalue_at_F(iFreq) = anova1(x,groups,'off');
+    [h,p] = ttest2(Parr_sleep(:,iFreq),Parr_wake_still(:,iFreq));
+    pvalue_at_F(iFreq) = p;
 end
 
 close all
@@ -158,7 +157,7 @@ for iPlot = 1:2
 
     xlim(usexlims(iPlot,:));
     if iPlot == 1
-        title("Mean Power against Frequency, 01-08-21");
+        title("Mean Power against Frequency, Day 1");
         legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
     else
         title('Zoomed-in on low frequencies');

@@ -100,11 +100,9 @@ end
 % OK now you have Parr_sleep size(67 x 4096) and Parr_wake_still
 % size(220,4096)... 4096 is the frequencies 1-100Hz (stored in F)
 % sweep frequencies
-pvalue_at_F = NaN(size(F));
 for iFreq = 1:numel(F)
-    x = [Parr_sleep(:,iFreq);Parr_wake_still(:,iFreq)];
-    groups = [zeros(size(Parr_sleep(:,iFreq)));ones(size(Parr_wake_still(:,iFreq)))];
-    pvalue_at_F(iFreq) = anova1(x,groups,'off');
+    [h,p] = ttest2(Parr_sleep(:,iFreq),Parr_wake_still(:,iFreq));
+    pvalue_at_F(iFreq) = p;
 end
 
 %% do all your figure stuff in one place so you can run this section separately
@@ -132,7 +130,7 @@ for iPlot = 1:2
 
     xlim(usexlims(iPlot,:));
     if iPlot == 1
-        title("Mean Power against Frequency, 03-11-21");
+        title("Mean Power against Frequency, Day 2");
         legend({'sleep','wake-still','p < 0.001','p < 0.01','p < 0.05'},'location','southwest');
     else
         title('Zoomed-in on low frequencies');
